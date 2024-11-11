@@ -1,10 +1,7 @@
 
 
-load_data <- function(filename){
-  
-  path <- "E:/Portfolio/R/Projects"
-  #filename <- "career_path_data_en.csv"
-  
+load_data <- function(path, filename){
+
   # -- build url
   url <- file.path(path, filename)
   

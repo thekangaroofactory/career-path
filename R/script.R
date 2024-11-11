@@ -1,14 +1,17 @@
 
 
-data <- load_data("career_path_data_en.csv")
+# -- load data
+data <- load_data(path = "E:/MyWork/CV/Career path",
+                  filename = "career_path_data_en.csv")
 
+# -- apply pipelines
 data_2 <- data_pipeline(data)
 company <- company_pipeline(data_2)
 category <- category_pipeline(data_2)
 section <- section_pipeline(data_2)
 timeline <- timeline_pipeline(data_2)
 
-
+# -- set title & description
 title_fr <- "Profil<br>Technico-fonctionnel"
 desc_fr <- "<b>Coordination de Projets Data</b><br>
         En interaction étroite avec les équipes techniques<br>
@@ -23,9 +26,10 @@ desc_en <- "<b>Data Project Management</b><br>
         <b>Tool development & Data analysis</b><br>
         Use of technical skills to speed up tasks by developing specific tools"
 
-
+# -- build plot
 p <- career_path(data_2, 
                  profile_title = title_en, 
                  profile_description = desc_en)
-p
 
+# -- display
+print(p)

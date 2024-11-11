@@ -8,93 +8,91 @@ library(RColorBrewer)
 career_path <- function(data, profile_title, profile_description){
 
   # -- colors
+  plot_background_fill <- "grey98"
   background_color_fill <- "grey95"
   background_color <- "grey85"
   text_color <- "grey30"
   
   # -- segments
-  bar_height <- 0.5
-
-  rect_alpha <- 0.7
-  
-
-  text_size <- 3
-  text_nudge_y <- -0.4
-  
-  seg_contract <- 75
-  
-  RANGE_SIZE <- 4
-  
-  # -- timeline
-  timeline_text_y <- -0.5
+  segment_contract_x <- 75
+  segment_size_y <- 4
+  segment_alpha <- 0.7
+  segment_text_size <- 3
+  segment_text_nudge_y <- -0.4
   
   # -- category & section
   category_nudge_x <- 2000
   section_nudge_x <- 1300
   
   # -- company
-  y_company <- -1.5
+  company_y <- -1.5
   
+  # -- timeline
+  timeline_text_y <- -0.5
+  
+  # -- axis
+  expand_limits_x <- 365
   
     
   # -- init
   data %>% 
     ggplot() +
     
-    # -- experiences & compétences ---------------------------------------------
+    # -- experiences & skills --------------------------------------------------
     # -- segments
     geom_segment(
-      aes(x = start.date + seg_contract,
-          xend = end.date - seg_contract,
+      aes(x = start.date + segment_contract_x,
+          xend = end.date - segment_contract_x,
           y = level,
           yend = level,
           colour = as.numeric(start.date)),
-      linewidth = RANGE_SIZE,
+      linewidth = segment_size_y,
       lineend = 'round', 
-      alpha = rect_alpha) +
+      alpha = segment_alpha) +
     
-    # scale_colour_manual(values = segment_fill) +
+    # -- apply color palette (on start.date)
     scale_color_distiller(palette = "OrRd", trans = "reverse") +
     
     # -- labels: title
     geom_text(
       aes(
-        x = start.date + seg_contract,
+        x = start.date + segment_contract_x,
         y = level,
         label = title,
         hjust = 0),
-      nudge_y = text_nudge_y,
-      size = text_size,
+      nudge_y = segment_text_nudge_y,
+      size = segment_text_size,
       colour = text_color) +
     
     # -- labels: sub-title-1
     geom_text(
       aes(
-        x = start.date + seg_contract,
+        x = start.date + segment_contract_x,
         y = level,
         label = sub.title.1,
         hjust = 0),
-      nudge_y = text_nudge_y * 2,
-      size = text_size,
+      nudge_y = segment_text_nudge_y * 2,
+      size = segment_text_size,
       colour = text_color) +
     
     # -- labels: sub-title-2
     geom_text(
       aes(
-        x = start.date + seg_contract,
+        x = start.date + segment_contract_x,
         y = level,
         label = sub.title.2,
         hjust = 0),
-      nudge_y = text_nudge_y * 3,
-      size = text_size,
+      nudge_y = segment_text_nudge_y * 3,
+      size = segment_text_size,
       colour = text_color) +
   
     # -- axis (timeline) -------------------------------------------------------
-  
+    # -- line
     geom_hline(
       aes(yintercept = 0),
       colour = background_color) +
       
+    # -- ticks
     geom_point(
       data = timeline,
       aes(
@@ -104,6 +102,7 @@ career_path <- function(data, profile_title, profile_description){
       fill = background_color,
       size = 2) +
         
+    # -- legends
     geom_text(
       data = timeline,
       aes(
@@ -124,7 +123,7 @@ career_path <- function(data, profile_title, profile_description){
       linewidth = 0.5,
       colour = background_color) +
     
-    # -- category
+    # -- category titles
     geom_text(
       data = category,
       aes(x = x - category_nudge_x,
@@ -138,7 +137,7 @@ career_path <- function(data, profile_title, profile_description){
       alpha = 50,
       size = 8) +
     
-    # -- section
+    # -- section titles
     geom_text(
       data = section,
       aes(x = x - section_nudge_x,
@@ -155,29 +154,29 @@ career_path <- function(data, profile_title, profile_description){
     # -- segments
     geom_segment(
       data = company,
-      aes(x = start.date + seg_contract,
-          xend = end.date - seg_contract,
-          y = y_company,
-          yend = y_company,
+      aes(x = start.date + segment_contract_x,
+          xend = end.date - segment_contract_x,
+          y = company_y,
+          yend = company_y,
           colour = as.numeric(start.date)),
-      linewidth = RANGE_SIZE, 
+      linewidth = segment_size_y, 
       lineend = 'round', 
-      alpha = rect_alpha) +
+      alpha = segment_alpha) +
     
     # -- labels
     geom_text(
       data = company,
       aes(
-        x = start.date + seg_contract,
-        y = y_company,
+        x = start.date + segment_contract_x,
+        y = company_y,
         label = company,
         hjust = 0),
-      nudge_y = text_nudge_y,
-      size = text_size,
+      nudge_y = segment_text_nudge_y,
+      size = segment_text_size,
       colour = text_color) +
     
     # -- description layer -----------------------------------------------------
-    
+    # -- profile title
     ggtext::geom_textbox(
       data = tibble(
         x = min(section$x),
@@ -197,6 +196,7 @@ career_path <- function(data, profile_title, profile_description){
       colour = text_color,
       size = 8) +
     
+    # -- profile description
     ggtext::geom_textbox(
       data = tibble(
         x = max(data_2$end.date),
@@ -216,20 +216,16 @@ career_path <- function(data, profile_title, profile_description){
   
     
     # -- axis ------------------------------------------------------------------
-    expand_limits(x = as.Date("2026-12-31")) +
+    # expand behond end.date to allow more rooms for labels
+    expand_limits(x = max(data$end.date) + expand_limits_x) +
     
     # -- theme -----------------------------------------------------------------
-    # ggtitle("Career Path") +
-    
-    #theme_minimal() +
-  
     theme(
       
-      # -- background
+      # -- background & grid
       panel.background = element_blank(),
       panel.border = element_blank(),
-      
-      plot.background = element_rect(fill = "grey98"),
+      plot.background = element_rect(fill = plot_background_fill),
       panel.grid = element_blank(),
       
       # -- axis

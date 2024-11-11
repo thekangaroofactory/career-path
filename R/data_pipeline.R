@@ -2,8 +2,7 @@
 
 library(dplyr)
 
-
-
+# -- data
 data_pipeline <- function(data){
   
   # -- replace date NAs by current date
@@ -21,7 +20,7 @@ data_pipeline <- function(data){
   # 2 levels between Projet/Roles & Data/Generales
   data$level <- data$level + 1
   #data[data$section %in% c("Data", "Fonctionelles"), ]$level <- data[data$section %in% c("Data", "Fonctionelles"), ]$level + 2
-  data[data$section %in% levels(data_2$section)[1:2], ]$level <- data[data$section %in% levels(data_2$section)[1:2], ]$level + 2
+  data[data$section %in% levels(data$section)[1:2], ]$level <- data[data$section %in% levels(data$section)[1:2], ]$level + 2
   
   # -- order & return
   data %>%
@@ -29,8 +28,7 @@ data_pipeline <- function(data){
   
 }
 
-
-
+# -- companies
 company_pipeline <- function(data){
   
   data %>%
@@ -42,7 +40,7 @@ company_pipeline <- function(data){
   
 }
 
-
+# -- categories
 category_pipeline <- function(data){
   
   data %>%
@@ -55,7 +53,7 @@ category_pipeline <- function(data){
     
 }
 
-
+# -- sections
 section_pipeline <- function(data){
   
   data %>%
@@ -69,7 +67,7 @@ section_pipeline <- function(data){
   
 }
 
-
+# -- timeline
 timeline_pipeline <- function(data){
   
   data %>%
